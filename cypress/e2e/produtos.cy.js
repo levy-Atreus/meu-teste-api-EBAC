@@ -51,19 +51,22 @@ describe('Testes da Funcionalidade Produtos', () => {
             })
     });
 
-    it('Deve editar um produto já cadastrado', () => {
-        cy.request('produtos').then(response => {
-            let id = response.body.produtos[0]._id
+    it('Deve editar um produto cadastrado previamente', () => {
+        let produto = `Produto EBAC ${Math.floor(Math.random() * 100000000)}`
+        cy.cadastrarProduto(token, produto, 250, "Descrição do produto novo", 180)
+        .then(response => {
+            let id = response.body._id
+
             cy.request({
                 method: 'PUT', 
                 url: `produtos/${id}`,
                 headers: {authorization: token}, 
                 body: 
                 {
-                    "nome": "Produto Editado 45642083",
-                    "preco": 100,
+                    "nome": produto,
+                    "preco": 200,
                     "descricao": "Produto editado",
-                    "quantidade": 100
+                    "quantidade": 300
                   }
             }).then(response => {
                 expect(response.body.message).to.equal('Registro alterado com sucesso')
