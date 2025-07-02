@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout do Código') {
+            steps {
+                echo 'Clonando o repositório...'
+                git url: 'https://github.com/levy-Atreus/meu-teste-api-EBAC.git', branch: 'main'
+                echo 'Código clonado com sucesso.'
+            }
+        }
+
+        stage('Setup') {
+            steps {
+                echo 'Iniciando a instalação das dependências do projeto...'
+                bat 'npm install'
+                echo 'Instalação das dependências concluída.'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Iniciando a execução dos testes Cypress/NPM...'
+                bat '''
+                    set NO_COLOR=1
+                    npm test
+                '''
+                echo 'Execução dos testes concluída.'
+            }
+        }
+    }
+}
