@@ -18,14 +18,15 @@ pipeline {
             }
         }
 
-        stage('Subir Servidor') { // Nova etapa para iniciar o servidor
-            steps {
-                echo 'Iniciando o servidor Serverest em segundo plano...'
-                bat 'start /B npm start'
-                sleep 5 // Ajuste este tempo se o seu servidor precisar de mais ou menos segundos
-                echo 'Servidor iniciado e pronto para testes.'
-            }
-        }
+        stage('Subir Servidor') { // Etapa para iniciar o servidor
+    steps {
+        echo 'Iniciando o servidor Serverest (MODO DEBUG - ESTA ETAPA VAI BLOQUEAR O PIPELINE)...'
+        // REMOVEMOS O 'start /B' E O 'sleep' PARA VER O QUE ACONTECE
+        bat 'npm start'
+        // Não adicione sleep aqui, pois npm start vai ocupar o terminal
+        echo 'Servidor iniciado (ou falhou - verifique a saída acima).'
+    }
+}
 
         stage('Test') {
             steps {
