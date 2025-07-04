@@ -21,7 +21,7 @@ pipeline {
         stage('Subir Servidor') { // Etapa para iniciar o servidor
     steps {
         echo 'Iniciando o servidor Serverest (MODO DEBUG - ESTA ETAPA VAI BLOQUEAR O PIPELINE)...'
-        // REMOVEMOS O 'start /B' E O 'sleep' PARA VER O QUE ACONTECE
+        // REMOVEMOS O 'start /B' E O 'sleep' AQUI!
         bat 'npm start'
         // Não adicione sleep aqui, pois npm start vai ocupar o terminal
         echo 'Servidor iniciado (ou falhou - verifique a saída acima).'
