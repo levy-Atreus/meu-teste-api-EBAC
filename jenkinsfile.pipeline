@@ -19,13 +19,16 @@ pipeline {
             }
         }
 
-        stage('Subir Servidor') {
-            steps {
-                echo 'Iniciando o servidor Serverest (MODO DEBUG - ESTA ETAPA VAI BLOQUEAR O PIPELINE)...'
-                bat 'node_modules\\.bin\\serverest.cmd'
-                echo 'Servidor iniciado (ou falhou - verifique a saída acima).'
-            }
-        }
+        stage('Subir Servidor') { // Etapa para iniciar o servidor
+    steps {
+        echo 'Iniciando o servidor ServeRest em segundo plano...'
+        // O 'start /B' executa o comando em segundo plano no Windows
+        bat 'start /B node_modules\\.bin\\serverest.cmd'
+        // Dê um pequeno tempo para o servidor inicializar antes de prosseguir
+        sleep 5 // Espera 5 segundos
+        echo 'Servidor Serverest iniciado. Prosseguindo para os testes.'
+    }
+}
 
         stage('Test') {
             steps {
