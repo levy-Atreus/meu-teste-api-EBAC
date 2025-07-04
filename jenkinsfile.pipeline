@@ -11,21 +11,25 @@ pipeline {
         }
 
         stage('Setup') {
-    steps {
-        echo 'Limpando cache NPM e instalando dependências...'
-        bat 'npm cache clean --force'
-        bat 'npm install'
-        echo 'Instalação das dependências concluída.'
-    }
-}
+            steps {
+                echo 'Limpando cache NPM e instalando dependências...'
+                bat 'npm cache clean --force' // Linha adicionada para limpeza de cache
+                bat 'npm install'
+                echo 'Instalação das dependências concluída.'
+            }
+        }
 
         stage('Subir Servidor') { // Etapa para iniciar o servidor
-    steps {
-        echo 'Iniciando o servidor Serverest (MODO DEBUG - ESTA ETAPA VAI BLOQUEAR O PIPELINE)...'
-        bat 'npm start'
-        echo 'Servidor iniciado (ou falhou - verifique a saída acima).'
-    }
-}
+            steps {
+                echo 'Iniciando o servidor Serverest (MODO DEBUG - ESTA ETAPA VAI BLOQUEAR O PIPELINE)...'
+                // Agora que serverest foi adicionado ao package.json e instalado via npm install,
+                // vamos executá-lo diretamente do node_modules.
+                // No Windows, o executável é node_modules\.bin\serverest.cmd
+                bat 'node_modules\\.bin\\serverest.cmd' // <--- Linha modificada
+                // Não adicione sleep aqui, pois serverest vai ocupar o terminal
+                echo 'Servidor iniciado (ou falhou - verifique a saída acima).'
+            }
+        }
 
         stage('Test') {
             steps {
@@ -44,6 +48,7 @@ pipeline {
         always { // 'always' garante que esta seção será executada mesmo se as stages falharem
             script {
                 echo 'Tentando encerrar o servidor...'
+                // Comando para Windows que tenta encontrar e matar o processo do Node.js/Serverest na porta 3000
                 try {
                     bat 'for /f "tokens=5" %%a in (\'netstat -ano ^| findstr :3000\') do (taskkill /pid %%a /f)'
                     echo 'Servidor encerrado.'
@@ -60,4 +65,3 @@ pipeline {
         }
     }
 }
-
