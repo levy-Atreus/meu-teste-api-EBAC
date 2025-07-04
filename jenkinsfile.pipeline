@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 pipeline {
     agent any
 
@@ -60,3 +61,67 @@ stage('Subir Servidor') { // Etapa para iniciar o servidor
         }
     }
 }
+=======
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout do Código') {
+            steps {
+                echo 'Clonando o repositório...'
+                git url: 'https://github.com/levy-Atreus/meu-teste-api-EBAC.git', branch: 'main'
+                echo 'Código clonado com sucesso.'
+            }
+        }
+
+        stage('Setup') {
+    steps {
+        echo 'Limpando cache NPM e instalando dependências...'
+        bat 'npm cache clean --force'
+        bat 'npm install'
+        echo 'Instalação das dependências concluída.'
+    }
+}
+
+stage('Subir Servidor') { // Etapa para iniciar o servidor
+    steps {
+        echo 'Iniciando o servidor Serverest (MODO DEBUG - ESTA ETAPA VAI BLOQUEAR O PIPELINE)...'
+        bat 'node_modules\\.bin\\serverest.cmd'
+        echo 'Servidor iniciado (ou falhou - verifique a saída acima).'
+    }
+}
+
+        stage('Test') {
+            steps {
+                echo 'Iniciando a execução dos testes Cypress/NPM...'
+                // set NO_COLOR=1 é para evitar códigos de cor na saída do terminal do Jenkins
+                bat '''
+                    set NO_COLOR=1
+                    npm test
+                '''
+                echo 'Execução dos testes concluída.'
+            }
+        }
+    }
+
+    post {
+        always { // 'always' garante que esta seção será executada mesmo se as stages falharem
+            script {
+                echo 'Tentando encerrar o servidor...'
+                try {
+                    bat 'for /f "tokens=5" %%a in (\'netstat -ano ^| findstr :3000\') do (taskkill /pid %%a /f)'
+                    echo 'Servidor encerrado.'
+                } catch (Exception e) {
+                    echo "Falha ao encerrar o servidor ou ele já não estava rodando: ${e.message}"
+                }
+            }
+        }
+        failure {
+            echo 'Pipeline falhou.'
+        }
+        success {
+            echo 'Pipeline concluído com sucesso!'
+        }
+    }
+}
+>>>>>>> 136d537b090739a69b7b57b6312c4cb4a2df9ca6
