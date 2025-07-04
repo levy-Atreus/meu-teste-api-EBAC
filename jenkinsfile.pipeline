@@ -18,9 +18,19 @@ pipeline {
             }
         }
 
+        stage('Subir Servidor') { // Nova etapa para iniciar o servidor
+            steps {
+                echo 'Iniciando o servidor Serverest em segundo plano...'
+                bat 'start /B npm start'
+                sleep 5 // Ajuste este tempo se o seu servidor precisar de mais ou menos segundos
+                echo 'Servidor iniciado e pronto para testes.'
+            }
+        }
+
         stage('Test') {
             steps {
                 echo 'Iniciando a execução dos testes Cypress/NPM...'
+                // set NO_COLOR=1 é para evitar códigos de cor na saída do terminal do Jenkins
                 bat '''
                     set NO_COLOR=1
                     npm test
@@ -29,4 +39,25 @@ pipeline {
             }
         }
     }
+
+    post {
+        always { // 'always' garante que esta seção será executada mesmo se as stages falharem
+            script {
+                echo 'Tentando encerrar o servidor...'
+                try {
+                    bat 'for /f "tokens=5" %%a in (\'netstat -ano ^| findstr :3000\') do (taskkill /pid %%a /f)'
+                    echo 'Servidor encerrado.'
+                } catch (Exception e) {
+                    echo "Falha ao encerrar o servidor ou ele já não estava rodando: ${e.message}"
+                }
+            }
+        }
+        failure {
+            echo 'Pipeline falhou.'
+        }
+        success {
+            echo 'Pipeline concluído com sucesso!'
+        }
+    }
 }
+
