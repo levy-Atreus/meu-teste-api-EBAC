@@ -11,12 +11,13 @@ pipeline {
         }
 
         stage('Setup') {
-            steps {
-                echo 'Iniciando a instalação das dependências do projeto...'
-                bat 'npm install'
-                echo 'Instalação das dependências concluída.'
-            }
-        }
+    steps {
+        echo 'Limpando cache NPM e instalando dependências...'
+        bat 'npm cache clean --force' // <--- ADICIONE ESTA LINHA
+        bat 'npm install'
+        echo 'Instalação das dependências concluída.'
+    }
+}
 
         stage('Subir Servidor') { // Etapa para iniciar o servidor
     steps {
