@@ -7,7 +7,7 @@ describe('Testes da Funcionalidade Usuários', () => {
     let token;
 
     before(() => {
-        cy.token('Levy@eu.com.br', '123').then(tkn => { token = tkn });
+        cy.token('fulano@qa.com', 'teste').then(tkn => { token = tkn });
     });
 
     it('Deve listar usuários cadastrados e validar o contrato manualmente', () => {
